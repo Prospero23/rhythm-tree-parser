@@ -22,8 +22,8 @@ export type Tuplet = {
     kind: RhythmType.Tuplet;
     children: PreRenderModel[]
     // these two are to be in line with the Vexflow meaning. See vexflow docs for more
-    num_notes: number 
-    notes_occupied: number
+    numNotes: number 
+    notesOccupied: number
     suffix?: number
 }
 

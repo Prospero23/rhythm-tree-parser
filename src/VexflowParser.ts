@@ -120,9 +120,9 @@ export default class VexflowConverter {
       let suffixString = this.durationToString(model.suffix)
       let suffix = this.durationStringToGlyph(suffixString);
       // need at least vexflow 5.1.0 to add suffix to tuplets
-      tuplet = this.factory.Tuplet({notes: childNotes, options: {numNotes: model.num_notes, notesOccupied: model.notes_occupied, ratioed: true, bracketed: true}})
+      tuplet = this.factory.Tuplet({notes: childNotes, options: {numNotes: model.numNotes, notesOccupied: model.notesOccupied, ratioed: true, bracketed: true}})
     } else { 
-      tuplet = this.factory.Tuplet({notes: childNotes, options: {numNotes: model.num_notes, notesOccupied: model.notes_occupied, ratioed: true}}) 
+      tuplet = this.factory.Tuplet({notes: childNotes, options: {numNotes: model.numNotes, notesOccupied: model.notesOccupied, ratioed: true}}) 
     }
 
     tuplet.setAttribute("id", model.id)

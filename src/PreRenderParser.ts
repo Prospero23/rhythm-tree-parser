@@ -188,7 +188,7 @@ export default class PreRenderParser {
        const children = this.convertNodeArray(node.children, childSize)
 
         // to have note beside -> baseDuration -> childSize
-        return {id: node.id, kind: RhythmType.Tuplet, children: [...children], num_notes: numNotes, notes_occupied: notesOccupied}
+        return {id: node.id, kind: RhythmType.Tuplet, children: [...children], numNotes: numNotes, notesOccupied: notesOccupied}
     }
 
     // post processing step to add beams to everything
@@ -225,7 +225,7 @@ export default class PreRenderParser {
             throw new Error(`Tuplet ${model.id} has no children; cannot calculate suffix.`);
             }
 
-            if (model.num_notes === 0) {
+            if (model.numNotes === 0) {
             throw new Error(`Tuplet ${model.id} has 0 notes; invalid.`);
             }
 
@@ -244,13 +244,13 @@ export default class PreRenderParser {
                 throw new Error(`suffix not created correctly for tuplet ${child.id}`);
                 }
                 // notes occupied is the "real" duration so needed for proper size calcs
-                let childFraction = new Fraction(child.notes_occupied, child.suffix);
+                let childFraction = new Fraction(child.notesOccupied, child.suffix);
                 totalDuration.add(childFraction);
             }
             }
 
             // improper size? this may be enough
-            const unitSize = totalDuration.divide(model.num_notes).reduce();
+            const unitSize = totalDuration.divide(model.numNotes).reduce();
 
             if (unitSize.numerator !== 1) {
             console.warn(`Non-unit fraction encountered in ${model.id}: ${unitSize.toString()}`);
