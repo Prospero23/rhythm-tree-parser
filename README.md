@@ -7,13 +7,13 @@ This is an open-source version of the pipeline used inside [ORhythmic](https://a
 ## Installation
 If your project uses a bundler, you can install rhythm-tree-converter along with VexFlow from npm:
 ```bash
-npm install vexflow @prospero23/rhythm-tree-converter
+npm install vexflow @orhythmic/rhythm-tree-converter
 ```
 
 ## How to Use
 Below is a basic flow for the conversion process. For more complex rendering help, see [the VexFlow wiki](https://github.com/0xfe/vexflow/wiki).
 ```js
-import { treeToVexflow } from "@prospero23/rhythm-tree-converter";
+import { treeToVexflow } from "@orhythmic/rhythm-tree-converter";
 import { Factory } from "vexflow";
 
 const factory = new Factory({renderer: {elementId: "output", width: 500, height: 200}});

@@ -1,5 +1,5 @@
 {
-  "name": "@prospero23/rhythm-tree-converter",
+  "name": "@orhythmic/rhythm-tree-converter",
   "version": "1.0.0",
   "type": "module",
   "description": "Converts rhythms represented as trees to a format that can be rendered by Vexflow",
