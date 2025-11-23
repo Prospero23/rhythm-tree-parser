@@ -1,15 +1,16 @@
-import { StemmableNote, Factory, Registry, ModifierPosition, Articulation, type Tuplet as VexTuplet} from 'vexflow';
+import { StemmableNote, Factory, Registry, ModifierPosition, Articulation} from 'vexflow';
 import {RhythmType, type PreRenderModel, type Note, type Tuplet} from '../data/models';
 import isValidToBeam from '../helpers/isValidToBeam';
 
 const MIDDLE_NOTE = "B/4";
 
-// Used in tie calculations.
+// Used in tie calculations. (tie all rendered notes that share same engine id together)
 export type EngineMap = Record<string, string[]>
+//Used in user selection logic to fetch proper tree node for selected VexFlow component.
 export type RenderMap = Record<string, string>
 
 interface VexflowConverterSettings {
-  hasSuffix: boolean;
+  maxTied?: number;
 }
 
 export default class VexflowConverter {
@@ -20,9 +21,9 @@ export default class VexflowConverter {
   private renderNotesToEngine: RenderMap
   private engineToRenderTies: EngineMap
   private renderTiesToEngine: RenderMap
-  private settings: VexflowConverterSettings = {hasSuffix: true}
+  private settings: VexflowConverterSettings = {maxTied: 3}
 
-  constructor(factory: Factory, options: {hasSuffix: boolean}) {
+  constructor(factory: Factory, options?: VexflowConverterSettings) {
     this.factory = factory;
     this.registry = new Registry();
     Registry.enableDefaultRegistry(this.registry) //auto adds notes to registry 
@@ -103,17 +104,8 @@ export default class VexflowConverter {
   private renderTuplet(model: Tuplet): StemmableNote[] {
     const childNotes: StemmableNote[] = this.processNodes(model.children);
 
-    let tuplet: VexTuplet;
-    if (this.settings.hasSuffix){
-      if (!model.suffix){
-        throw new Error("Tuplet does not have initialized suffix")
-      }
-      // TODO: add suffix to tuplets. Must wait for at least vexflow 5.1.0.
-      tuplet = this.factory.Tuplet({notes: childNotes, options: {numNotes: model.numNotes, notesOccupied: model.notesOccupied, ratioed: true, bracketed: true}})
-    } else { 
-      tuplet = this.factory.Tuplet({notes: childNotes, options: {numNotes: model.numNotes, notesOccupied: model.notesOccupied, ratioed: true}}) 
-    }
-
+    const tuplet = this.factory.Tuplet({notes: childNotes, options: {numNotes: model.numNotes, notesOccupied: model.notesOccupied, ratioed: true}}) 
+    
     tuplet.setAttribute("id", model.id)
     tuplet.setFontSize(24)
 
