@@ -1,9 +1,9 @@
-import { type RhythmNode, type Note, type Tuplet, type PreRenderModel, RhythmType, type ValidDuration } from "./data/models";
-import Fraction from "./helpers/fraction";
+import { type RhythmNode, type Note, type Tuplet, type PreRenderModel, RhythmType, type ValidDuration } from "../data/models";
+import Fraction from "../helpers/fraction";
 
 const MAX_TIED = 3
 
-export default class PreRenderParser {        
+export default class PreRenderConverter {        
     validDurations: ValidDuration[] = [1, 2, 4, 8, 16, 32, 64, 128, 256];
 
     /**

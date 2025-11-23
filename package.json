@@ -1,20 +1,37 @@
 {
-  "name": "@prospero23/rhythm-tree-parser",
+  "name": "@prospero23/rhythm-tree-converter",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "type": "module",
+  "description": "Converts rhythms represented as trees to a format that can be rendered by Vexflow",
+
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "lint": "eslint .",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+
   "author": "Ben Eidson",
   "license": "MIT",
-  "description": "converts rhythms represented as trees to a format that can be rendered by Vexflow",
-  "dependencies": {
+
+  "peerDependencies": {
     "vexflow": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "eslint": "^9.39.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.47.0"
+    "typescript-eslint": "^8.47.0",
+    "vexflow": "^5.0.0"
   }
 }

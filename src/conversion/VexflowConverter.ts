@@ -1,6 +1,6 @@
 import { VexFlow, StemmableNote, Factory, Registry, ModifierPosition, Articulation, type Tuplet as VexTuplet} from 'vexflow';
-import {RhythmType, type PreRenderModel, type Note, type Tuplet} from './data/models';
-import isValidToBeam from './helpers/isValidToBeam';
+import {RhythmType, type PreRenderModel, type Note, type Tuplet} from '../data/models';
+import isValidToBeam from '../helpers/isValidToBeam';
 
 const { Glyphs } = VexFlow;
 
