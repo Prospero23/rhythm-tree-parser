@@ -19,7 +19,7 @@ import { Factory } from "vexflow";
 const factory = new Factory({renderer: {elementId: "output", width: 500, height: 200}});
 const meter = [4,4];
 
-const note = {
+const rootNode = {
     id: "0",
     size: 1,
     children: [],
@@ -28,7 +28,7 @@ const note = {
     beamID: null
 }
 
-const {notes, validMeterString} = treeToVexflow(factory, note, meter)
+const {notes, validMeterString} = treeToVexflow(factory, rootNode, meter)
 
 const voice = factory.Voice({time: validMeterString})
 voice.addTickables(notes);
