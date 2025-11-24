@@ -43,7 +43,7 @@ VexFlow.loadFonts('Bravura').then(() => {
 })
 ```
 
-## What conversion returns
+## What Conversion Returns
 ```ts
 {
     notes: StemmableNote[]; // Notes to be rendered by VexFlow
@@ -52,3 +52,10 @@ VexFlow.loadFonts('Bravura').then(() => {
     treeToVex: Record<string, string>; // Map to get VexFlow IDs for given RhythmNode ID.
 }
 ```
+## Conversion Options
+Can be passed in as last argument of `treeToVexflow()`.
+```ts
+{
+    noteName: string; // Valid VexFlow note name.
+    maxTied: number; // Max number of tied notes before rendered as tuplet. 
+}
