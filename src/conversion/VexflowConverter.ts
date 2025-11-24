@@ -2,17 +2,37 @@ import { StemmableNote, Factory, Registry, ModifierPosition, Articulation} from 
 import {RhythmType, type PreRenderModel, type Note, type Tuplet} from '../data/models';
 import isValidToBeam from '../helpers/isValidToBeam';
 
-const MIDDLE_NOTE = "B/4";
-
-// Used in tie calculations. (tie all rendered notes that share same engine id together)
+/**
+ * Maps a tree node ID to all the VexFlow IDs generated for it.
+ * Used for tying and selection.
+ */
 export type EngineMap = Record<string, string[]>
-//Used in user selection logic to fetch proper tree node for selected VexFlow component.
+/**
+ * Maps a VexFlow-rendered element ID to its originating tree node ID.
+ * Used for selection and reverse lookup.
+ */
 export type RenderMap = Record<string, string>
 
+/**
+ * Full settings used internally for rendering.
+ */
 interface VexflowConverterSettings {
-  maxTied?: number;
+  noteName: string;
+}
+/**
+ * Options exposed to the user. All optional.
+ */
+interface VexflowConverterOptions {
+  noteName?: string;
 }
 
+const defaultSettings: VexflowConverterSettings = {
+  noteName: "B/4"
+}
+
+/**
+ * Converts PreRenderModels to what is needed for VexFlow.
+ */
 export default class VexflowConverter {
   private factory: Factory; 
   private registry: Registry;
@@ -21,9 +41,14 @@ export default class VexflowConverter {
   private renderNotesToEngine: RenderMap
   private engineToRenderTies: EngineMap
   private renderTiesToEngine: RenderMap
-  private settings: VexflowConverterSettings = {maxTied: 3}
+  private settings: VexflowConverterSettings
 
-  constructor(factory: Factory, options?: VexflowConverterSettings) {
+  /**
+   * Create a converter instance.
+   * @param factory Vexflow factory used for all rendering
+   * @param options Optional user settings
+   */
+  constructor(factory: Factory, options: VexflowConverterOptions = {}) {
     this.factory = factory;
     this.registry = new Registry();
     Registry.enableDefaultRegistry(this.registry) //auto adds notes to registry 
@@ -32,16 +57,22 @@ export default class VexflowConverter {
     this.renderNotesToEngine = {}
     this.engineToRenderTies = {}
     this.renderTiesToEngine = {}
-    this.settings = {...options};
-
+    this.settings = {...defaultSettings, ...options};
   }
 
+  /**
+   * Convert an array of PreRenderModels into VexFlow StemmableNotes.
+   * Handles note creation, tuplets, ties, and beams.
+   *
+   * @param nodes Array of PreRenderModel objects from PreRenderConverter.
+   * @returns All generated StemmableNotes.
+   */
   processNodes(nodes: PreRenderModel[]): StemmableNote[] {
     const result: StemmableNote[] = [];
 
     // Render and register all notes.
     for (const node of nodes) {
-      const renderedNotes = this.proccessNode(node); // Render and register
+      const renderedNotes = this.proccessNode(node);
       result.push(...renderedNotes);
     }
 
@@ -56,10 +87,16 @@ export default class VexflowConverter {
     return result
   }
 
+  /**
+   * @returns a combined mapping of:
+   * - engineID to [all note IDs + tie IDs]
+   *
+   * Used for selection and interaction.
+   */
   getEngine2VexMap(): EngineMap {
     const combinedMap: EngineMap = {};
   
-    // First, add all note IDs from engineToRenderNotes.
+    // Add all note IDs from engineToRenderNotes.
     Object.keys(this.engineToRenderNotes).forEach(engineID => {
       // Start with a copy of the note IDs.
       combinedMap[engineID] = [...this.engineToRenderNotes[engineID]];
@@ -72,18 +109,24 @@ export default class VexflowConverter {
   
     // TODO: If there are any engineIDs that exist only in the ties map, add those as well.
     // NOTE: not needed for now. Maybe in the future.
-  
     return combinedMap;
   }
-  
+
+  /**
+   * 
+   * @returns VexFlow to engine id mappings
+   * Used when clicking VexFlow-rendered objects
+   */
   getVex2EngineMap(): RenderMap {
-    // TODO: make combined map actually work when clicking ties but for now whatever
+    // TODO: make combined map actually work when clicking ties but for now whatever.
     const combinedMap: RenderMap = {...this.renderNotesToEngine, ...this.renderTiesToEngine}; 
     
     return combinedMap
   }
 
-  // Method to process individual nodes
+  /**
+   * Process a single PreRenderModel and return all corresponding StemmableNotes.
+   */
   private proccessNode(model: PreRenderModel): StemmableNote[] {
     switch (model.kind) {
       case RhythmType.Note:
@@ -131,7 +174,7 @@ export default class VexflowConverter {
         ? `${durationString}r`
         : `${durationString}`;
 
-    const note = this.factory.StaveNote({keys: [MIDDLE_NOTE], duration: noteString, dots: dots })
+    const note = this.factory.StaveNote({keys: [this.settings.noteName], duration: noteString, dots: dots })
 
     if (isAccented == true && isRest == false) {
       note.addModifier(new Articulation("a>").setPosition(ModifierPosition.BELOW))
@@ -179,9 +222,7 @@ export default class VexflowConverter {
   }
 
   /**
-   * helper function for dealing with creating note maps for use in touch detection
-   * @param engineID 
-   * @param vexID 
+   * Helper function for dealing with creating note maps for use in touch detection.
    */
   private generateNoteMaps(engineID: string, vexID: string){
     if (this.engineToRenderNotes[engineID] == undefined){
@@ -189,14 +230,12 @@ export default class VexflowConverter {
     } else {
       this.engineToRenderNotes[engineID].push(vexID)
     }
-    // also do reciprical
+    // also do reciprical...
     this.renderNotesToEngine[vexID] = engineID
   }
 
-    /**
-   * helper function for dealing with creating note maps for use in touch detection
-   * @param engineID 
-   * @param vexID 
+  /**
+   * Helper function for dealing with creating note maps for use in touch detection.
    */
     private generateTieMaps(engineID: string, vexID: string){
       if (this.engineToRenderTies[engineID] == undefined){
@@ -204,14 +243,14 @@ export default class VexflowConverter {
       } else {
         this.engineToRenderTies[engineID].push(vexID)
       }
-      // also do reciprical
+      // also do reciprical...
       this.renderTiesToEngine[vexID] = engineID
     }
 
   /**
-   * Handles creating ties remakes 
-   * @param engineID engine ID to generate notes for
-   * @returns absolutly nothin
+   * Handles creating ties.
+   * @param engineID engine ID to generate notes for.
+   * @returns absolutly nothin.
    */
   private generateTies(engineID: string){
 
@@ -252,7 +291,7 @@ export default class VexflowConverter {
       }
     }
 
-    // add new tie children to map
+    // Add new tie children to map.
     const newTieChildren = [...tieSet]
     if (newTieChildren.length == 0){
       return

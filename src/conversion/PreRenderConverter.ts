@@ -1,10 +1,15 @@
 import { type RhythmNode, type Note, type Tuplet, type PreRenderModel, RhythmType, type ValidDuration } from "../data/models";
 import Fraction from "../helpers/fraction";
 
+/**
+ * Options exposed to the user. All optional.
+ */
 interface PreRenderConverterOptions{
     maxTied?: number;
 }
-
+/**
+ * Full settings used internally for rendering.
+ */
 interface PreRenderConverterSettings{
     maxTied: number;
 }
@@ -12,7 +17,10 @@ interface PreRenderConverterSettings{
 const defaultSettings: PreRenderConverterSettings = {
     maxTied: 3,
 }
-
+/**
+ * Acts as intermediary converter between tree and Vexflow.
+ * Handles all the fancy math and such so the VexflowConverter can focus on rendering
+ */
 export default class PreRenderConverter {        
     validDurations: ValidDuration[] = [1, 2, 4, 8, 16, 32, 64, 128, 256];
     settings: PreRenderConverterSettings;
