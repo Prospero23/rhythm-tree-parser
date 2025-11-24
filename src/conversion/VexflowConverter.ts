@@ -43,11 +43,6 @@ export default class VexflowConverter {
   private renderTiesToEngine: RenderMap
   private settings: VexflowConverterSettings
 
-  /**
-   * Create a converter instance.
-   * @param factory Vexflow factory used for all rendering
-   * @param options Optional user settings
-   */
   constructor(factory: Factory, options: VexflowConverterOptions = {}) {
     this.factory = factory;
     this.registry = new Registry();
@@ -124,9 +119,6 @@ export default class VexflowConverter {
     return combinedMap
   }
 
-  /**
-   * Process a single PreRenderModel and return all corresponding StemmableNotes.
-   */
   private proccessNode(model: PreRenderModel): StemmableNote[] {
     switch (model.kind) {
       case RhythmType.Note:
@@ -221,9 +213,6 @@ export default class VexflowConverter {
     }
   }
 
-  /**
-   * Helper function for dealing with creating note maps for use in touch detection.
-   */
   private generateNoteMaps(engineID: string, vexID: string){
     if (this.engineToRenderNotes[engineID] == undefined){
       this.engineToRenderNotes[engineID] = [vexID]
@@ -234,24 +223,16 @@ export default class VexflowConverter {
     this.renderNotesToEngine[vexID] = engineID
   }
 
-  /**
-   * Helper function for dealing with creating note maps for use in touch detection.
-   */
-    private generateTieMaps(engineID: string, vexID: string){
-      if (this.engineToRenderTies[engineID] == undefined){
-        this.engineToRenderTies[engineID] = [vexID]
-      } else {
-        this.engineToRenderTies[engineID].push(vexID)
-      }
-      // also do reciprical...
-      this.renderTiesToEngine[vexID] = engineID
+  private generateTieMaps(engineID: string, vexID: string){
+    if (this.engineToRenderTies[engineID] == undefined){
+      this.engineToRenderTies[engineID] = [vexID]
+    } else {
+      this.engineToRenderTies[engineID].push(vexID)
     }
+    // also do reciprical...
+    this.renderTiesToEngine[vexID] = engineID
+  }
 
-  /**
-   * Handles creating ties.
-   * @param engineID engine ID to generate notes for.
-   * @returns absolutly nothin.
-   */
   private generateTies(engineID: string){
 
     const renderedIDs = this.engineToRenderNotes[engineID]

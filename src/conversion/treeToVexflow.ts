@@ -11,9 +11,26 @@ interface ConversionResult{
     treeToVex: EngineMap;
 }
 
-export function treeToVexflow(vexflowFactory: Factory, rootNode: RhythmNode, meter: [number, number]): ConversionResult{
-    const preConverter = new PreRenderConverter();
-    const vexConverter = new VexflowConverter(vexflowFactory);
+interface ConversionSettings{
+    noteName: string;
+    maxTied: number;
+}
+
+interface ConversionOptions{
+    noteName?: string;
+    maxTied?: number;
+}
+
+const baseSettings: ConversionSettings = {
+    noteName: "B/4",
+    maxTied: 3
+}
+
+export function treeToVexflow(vexflowFactory: Factory, rootNode: RhythmNode, meter: [number, number], options: ConversionOptions = {}): ConversionResult{
+    const settings: ConversionSettings = {...baseSettings, ...options};
+
+    const preConverter = new PreRenderConverter({maxTied: settings.maxTied});
+    const vexConverter = new VexflowConverter(vexflowFactory, {noteName: settings.noteName});
 
     const meterFraction = new Fraction(...meter);
     const nodes = preConverter.convertTreeToPreRender(meterFraction, rootNode);    

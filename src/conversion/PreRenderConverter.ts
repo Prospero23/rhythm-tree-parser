@@ -70,13 +70,6 @@ export default class PreRenderConverter {
         return [this.convertToTuplet(node, containingSpace)]
     }
 
-/**
- * Converts nodes with no children to a single note if possible. If not, creates multiple notes
- * that are tied.
- * @param node Node that has no children
- * @param containingSpace Same as in convertNode. Functions as length. numerator: how many of 1/denom
- * @returns Notes for a given node. Multiple notes = notes that are tied to equal the node length
- */
     private convertToNote(node: RhythmNode, containingSpace: Fraction): Note[]{
         if (node.children.length > 0){
             throw new Error("convert to node called on node that has children")
@@ -100,13 +93,6 @@ export default class PreRenderConverter {
 
         }
     
-    /**
-     * Handles creation of tied notes for nodes
-     * @param node node to convert
-     * @param size how many tied notes are needed
-     * @param durationValue denominator of single unit (1, 2, 4, 8, etc.)
-     * @returns tied notes
-     */
     private createTiedNote(node: RhythmNode, size: number, durationValue: ValidDuration): Note[]{
         const tiedNotes: Note[] = []
 
@@ -135,12 +121,6 @@ export default class PreRenderConverter {
         return tiedNotes
     }
 
-    /**
-     * The name gives it away
-     * @param nodes array of nodes to convert
-     * @param childDuration duration of a single child
-     * @returns converted array of nodes
-     */
     private convertNodeArray(nodes: RhythmNode[], childDuration: Fraction){
         const children: PreRenderModel[] = []
         for (const node of nodes){ 
@@ -153,14 +133,7 @@ export default class PreRenderConverter {
         return children.flat()
     }
 
-    /**
-     * Pretty self explanitory. Converts a node to a tuplet
-     * @param node node to convert to Tuplet
-     * @param containingSpace space tuplet is contained within (see other methods for better definition)
-     * @returns converted Tuplet
-     */
     private convertToTuplet(node: RhythmNode, containingSpace: Fraction): Tuplet{
-        // number children
         const numNotes = getChildrenTotalSize(node.children);
 
         const childSize: Fraction = new Fraction(1, containingSpace.denominator)
@@ -168,7 +141,6 @@ export default class PreRenderConverter {
 
        const children = this.convertNodeArray(node.children, childSize)
 
-        // to have note beside -> baseDuration -> childSize
         return {id: node.id, kind: RhythmType.Tuplet, children: [...children], numNotes: numNotes, notesOccupied: notesOccupied}
     }
 
